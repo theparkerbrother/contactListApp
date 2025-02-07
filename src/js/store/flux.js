@@ -14,7 +14,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			],
 			contacts: [],
-			agendaSlug: ""
+			agendaSlug: "",
+			requestUrlBase_contact: 'https://playground.4geeks.com/contact/'
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -42,14 +43,15 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			
 			/* ~~~~~~CREATE AGENDA~~~~~~~ */
-			createAgenda: (slug) => {
-				console.log("I'm in createAgenda.");
-				const requestUrl = `https://playground.4geeks.com/contact/agendas/${slug}`;
+			createAndSetAgenda: async (slug) => {
+				console.log("I'm in createAndSetAgenda.");
+				const store = getStore();
+				const requestUrl = `${store.requestUrlBase_contact}/agendas/${slug}`;
 				const headers = {
 					'accept': 'application/json',
 					'Content-Type': 'application/json'
 				};
-				fetch(requestUrl,{
+				await fetch(requestUrl,{
 					method: 'POST',
 					headers
 				})
@@ -69,16 +71,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			/* ~~~~~~GET CONTACTS~~~~~~~ */
-			getAndSetContacts: () => {
+			getAndSetContacts: async () => {
 				console.log("I'm in getContacts.");
 				const store = getStore();
-				const requestUrl = `https://playground.4geeks.com/contact/agendas/${store.agendaSlug}/contacts`;
+				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts`;
 				const headers = {
 					'accept': 'application/json',
 					'Content-Type': 'application/json'
 				};
 				
-				fetch(requestUrl,{
+				await fetch(requestUrl,{
 					method: 'GET',
 					headers,
 				})
@@ -107,10 +109,10 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			/* ~~~~~~CREATE CONTACT~~~~~~~ */
-			createContact: (contact) => {
+			createContact: async (contact) => {
 				console.log("I'm in createContact.");
 				const store = getStore();
-				const requestUrl = `https://playground.4geeks.com/contact/agendas/${store.agendaSlug}/contacts`;
+				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts`;
 				const headers = {
 					'accept': 'application/json',
 					'Content-Type': 'application/json'
@@ -121,7 +123,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 					'email': contact.email,
 					'address': contact.address
 				}
-				fetch(requestUrl,{
+				await fetch(requestUrl,{
 					method: 'POST',
 					headers,
 					body: JSON.stringify(body)
@@ -148,13 +150,68 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 
 			/* ~~~~~~UPDATE CONTACT~~~~~~~ */
-			updatecontact: (contactID) => {
+			updatecontact: async (updatedContactInfo) => {
 				console.log("I'm in updateContact.");
+				const store = getStore();
+				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${updatedContactInfo.contact_id}`;
+				const headers = {
+					'accept': 'applications/json',
+					'Content-Type': 'application/json'
+				};
+				const body = {
+					'name': updatedContactInfo.name,
+					'phone': updatedContactInfo.phone,
+					'email': updatedContactInfo.email,
+					'address': updatedContactInfo.address
+				};
+
+				await fetch(requestUrl,{
+					method: 'PUT',
+					headers,
+					body: JSON.stringify(body)
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log(data)
+					/*
+					data is:
+					{
+						"name": "string",
+						"phone": "string",
+						"email": "string",
+						"address": "string",
+						"id": 0	
+					}
+					*/
+					store.getActions.getAndSetContacts();
+				})
+				.catch(error => console.error('Error', error));
 			},
 
 			/* ~~~~~~UPDATE CONTACT~~~~~~~ */
-			deleteContact: (contactID) => {
+			deleteContact: async (contactID) => {
 				console.log("I'm in deleteContact.");
+				const store = getStore();
+				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${updatedContactInfo.contact_id}`;
+				const headers = {
+					'accept': 'applications/json',
+					'Content-Type': 'application/json'
+				};
+
+				await fetch(requestUrl,{
+					method: 'PUT',
+					headers,
+				})
+				.then(response => response.json())
+				.then(data => {
+					console.log(data)
+					/*
+					data is:
+					"string"
+					*/
+					store.getActions.getAndSetContacts();
+				})
+				.catch(error => console.error('Error', error));
 			},
 		}
 	};
