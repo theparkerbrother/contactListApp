@@ -68,6 +68,11 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			},
 
+			getContactById: (contactId) => {
+				const store = getStore();
+				return store.contacts.find(contact => contact.id === parseInt(contactId, 10)) || null;
+			},
+
 			/* ~~~~~~GET CONTACTS~~~~~~~ */
 			getAndSetContacts: async () => {
 				try {
@@ -92,89 +97,85 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 			/* ~~~~~~CREATE CONTACT~~~~~~~ */
 			createContact: async (contact) => {
-				console.log("I'm in createContact.");
-				const store = getStore();
-				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts`;
-				const headers = {
-					'accept': 'application/json',
-					'Content-Type': 'application/json'
-				};
-				const body = {
-					'name': contact.name,
-					'phone': contact.phone,
-					'email': contact.email,
-					'address': contact.address
-				}
-				await fetch(requestUrl,{
-					method: 'POST',
-					headers,
-					body: JSON.stringify(body)
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data)
-					/*
-					data is:
-					{
-						"name": "string",
-						"phone": "string",
-						"email": "string",
-						"address": "string",
-						"id": 0
+				try {
+					console.log("I'm in createContact.");
+					const store = getStore();
+					const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts`;
+					const headers = {
+						'Accept': 'application/json',
+						'Content-Type': 'application/json'
+					};
+					const body = {
+						name: contact.name,
+						phone: contact.phone,
+						email: contact.email,
+						address: contact.address
+					};
+			
+					const response = await fetch(requestUrl, {
+						method: 'POST',
+						headers,
+						body: JSON.stringify(body)
+					});
+			
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
 					}
-					*/
-					
+			
+					const data = await response.json();
+					console.log(data);
+			
 					// Update the store with the new contact
-					const updatedContacts = getActions.getAndSetContacts();
-					setStore({ contacts: updatedContacts });
-				})
-				.catch(error => console.error('Error', error));
+					const updatedContacts = getActions().getAndSetContacts();
+			
+				} catch (error) {
+					console.error("Error in createContact:", error);
+				}
 			},
 
 			/* ~~~~~~UPDATE CONTACT~~~~~~~ */
-			updatecontact: async (updatedContactInfo) => {
-				console.log("I'm in updateContact.");
-				const store = getStore();
-				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${updatedContactInfo.contact_id}`;
-				const headers = {
-					'accept': 'applications/json',
-					'Content-Type': 'application/json'
-				};
-				const body = {
-					'name': updatedContactInfo.name,
-					'phone': updatedContactInfo.phone,
-					'email': updatedContactInfo.email,
-					'address': updatedContactInfo.address
-				};
-
-				await fetch(requestUrl,{
-					method: 'PUT',
-					headers,
-					body: JSON.stringify(body)
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data)
-					/*
-					data is:
-					{
-						"name": "string",
-						"phone": "string",
-						"email": "string",
-						"address": "string",
-						"id": 0	
+			updateContact: async (updatedContactInfo) => {
+				try {
+					console.log("I'm in updateContact.");
+					const store = getStore();
+					const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${updatedContactInfo.id}`;
+					const headers = {
+						'accept': 'application/json',
+						'Content-Type': 'application/json'
+					};
+					const body = {
+						'name': updatedContactInfo.name,
+						'phone': updatedContactInfo.phone,
+						'email': updatedContactInfo.email,
+						'address': updatedContactInfo.address,
+						'id': updatedContactInfo.id
+					};
+	
+					const response = await fetch(requestUrl,{
+						method: 'PUT',
+						headers,
+						body: JSON.stringify(body)
+					})
+					if (!response.ok) {
+						throw new Error(`HTTP error! Status: ${response.status}`);
 					}
-					*/
-					store.getActions.getAndSetContacts();
-				})
-				.catch(error => console.error('Error', error));
+
+					const data = await response.json();
+					console.log(data);
+			
+					// Update the store with the updated contact
+					const updatedContacts = getActions().getAndSetContacts();
+
+				} catch (error) {
+					console.error("Error in updateContact:", error);
+				}
 			},
 
 			/* ~~~~~~UPDATE CONTACT~~~~~~~ */
 			deleteContact: async (contactID) => {
 				console.log("I'm in deleteContact.");
 				const store = getStore();
-				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${updatedContactInfo.contact_id}`;
+				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${contactID}`;
 				const headers = {
 					'accept': 'applications/json',
 					'Content-Type': 'application/json'
@@ -182,7 +183,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				await fetch(requestUrl,{
 					method: 'PUT',
-					headers,
+					headers
 				})
 				.then(response => response.json())
 				.then(data => {

@@ -25,6 +25,7 @@ export const Contact = props => {
 							phone={contact.phone}
 							email={contact.email}
 							address={contact.address}
+							contactId={contact.id}
 						/>
 					);
 				})}

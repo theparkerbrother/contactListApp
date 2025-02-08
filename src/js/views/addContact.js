@@ -1,17 +1,42 @@
-import React, { useState, useEffect, useContext } from "react";
-import PropTypes from "prop-types";
-import { Link, useParams } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import { Context } from "../store/appContext";
+import ContactForm from "../component/contactForm";
 
-export const AddContact = props => {
-	const { store, actions } = useContext(Context);
-	const params = useParams();
-	return (
-		<div className="jumbotron">
-			{/* <h1 className="display-4">This will show the demo element: {store.demo[params.theid].title}</h1> */}
-			<h1>This is the Add Contact page/view</h1>
-		</div>
-	);
+export const AddContact = () => {
+  const { actions } = useContext(Context);
+  const navigate = useNavigate(); // To redirect after saving
+
+  const [contact, setContact] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    address: "",
+  });
+
+  const handleChange = (e) => {
+    setContact({ ...contact, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await actions.createContact(contact); // Create a new contact
+      console.log("Contact successfully added!");
+      navigate("/"); // Optionally navigate back to contacts list after saving
+    } catch (error) {
+      console.error("Failed to add contact:", error);
+    }
+  };
+
+  return (
+    <div>
+		<ContactForm
+		contact={contact}
+		handleChange={handleChange}
+		handleSubmit={handleSubmit}
+		buttonText="Add Contact" // Button will say "Add Contact"
+		/>
+	</div>
+  );
 };
-
-
