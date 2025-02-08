@@ -6,7 +6,10 @@ export const ContactCard = ({name, email, phone, address, contactId}) => {
     const { actions } = useContext(Context);
     
     const handleDelete = () => {
-        actions.deleteContact(contactId);
+        const confirmDelete = window.confirm(`Are you sure you want to delete ${name.toUpperCase()} from you contact list?`);
+        if(confirmDelete) {
+            actions.deleteContact(contactId);
+        }
     };
     
     return (

@@ -174,27 +174,23 @@ const getState = ({ getStore, getActions, setStore }) => {
 			/* ~~~~~~UPDATE CONTACT~~~~~~~ */
 			deleteContact: async (contactID) => {
 				console.log("I'm in deleteContact.");
-				const store = getStore();
-				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${contactID}`;
-				const headers = {
-					'accept': 'applications/json',
-					'Content-Type': 'application/json'
-				};
+				try {
+					const store = getStore();
+					const actions = getActions();
+					const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts/${contactID}`;
+					// const headers = {
+					// 	'accept': 'applications/json',
+					// 	'Content-Type': 'application/json'
+					// };
 
-				await fetch(requestUrl,{
-					method: 'PUT',
-					headers
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data)
-					/*
-					data is:
-					"string"
-					*/
-					store.getActions.getAndSetContacts();
-				})
-				.catch(error => console.error('Error', error));
+					const reponse = await fetch(requestUrl,{
+						method: 'DELETE'
+						//headers
+					})
+					actions.getAndSetContacts();
+				} catch (error) {
+					console.error("Error in updateContact:", error);
+				}
 			},
 		}
 	};
