@@ -14,8 +14,8 @@ const getState = ({ getStore, getActions, setStore }) => {
 				}
 			],
 			contacts: [],
-			agendaSlug: "",
-			requestUrlBase_contact: 'https://playground.4geeks.com/contact/'
+			agendaSlug: "fp",
+			requestUrlBase_contact: 'https://playground.4geeks.com/contact'
 		},
 		actions: {
 			// Use getActions to call a function within a fuction
@@ -43,69 +43,51 @@ const getState = ({ getStore, getActions, setStore }) => {
 			},
 			
 			/* ~~~~~~CREATE AGENDA~~~~~~~ */
-			createAndSetAgenda: async (slug) => {
-				console.log("I'm in createAndSetAgenda.");
-				const store = getStore();
-				const requestUrl = `${store.requestUrlBase_contact}/agendas/${slug}`;
-				const headers = {
-					'accept': 'application/json',
-					'Content-Type': 'application/json'
-				};
-				await fetch(requestUrl,{
-					method: 'POST',
-					headers
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data)
-					/*
-					data is:
-					{
-						"slug": "string",
-						"id": 0
+			createAndSetAgenda: async () => {
+				try {
+					console.log("I'm in createAndSetAgenda.");
+					const store = getStore();
+					const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}`;
+					// const headers = {
+					// 	'accept': 'application/json',
+					// 	'Content-Type': 'application/json'
+					// };
+					const response = await fetch(requestUrl,{
+						method: 'POST',
+						//headers
+					})
+					console.log("This is the response",response.body);
+					if(response.status===400) {
+						console.log("Are we getting a 400?");
+						getActions().getAndSetContacts();
+						return;
 					}
-					*/
-					setStore({agendaSlug: data.slug});
-				})
-				.catch(error => console.error('Error', error));
+				}
+				catch (error) {
+					console.error('Error', error);
+				}
 			},
 
 			/* ~~~~~~GET CONTACTS~~~~~~~ */
 			getAndSetContacts: async () => {
+				try {
 				console.log("I'm in getContacts.");
-				const store = getStore();
-				const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts`;
-				const headers = {
-					'accept': 'application/json',
-					'Content-Type': 'application/json'
-				};
-				
-				await fetch(requestUrl,{
-					method: 'GET',
-					headers,
-				})
-				.then(response => response.json())
-				.then(data => {
-					console.log(data)
-					/*
-					data is:
-						{
-						"contacts": [
-							{
-							"name": "string",
-							"phone": "string",
-							"email": "string",
-							"address": "string",
-							"id": 0
-							}
-						]
-						}
-					*/
+					const store = getStore();
+					const requestUrl = `${store.requestUrlBase_contact}/agendas/${store.agendaSlug}/contacts`;
 					
-					// Update the store with the contacts
-					setStore({ contacts: data.contacts });
-				})
-				.catch(error => console.error('Error', error));
+					const response = await fetch(requestUrl,{
+						method: 'GET'
+					})
+					const data = await response.json();
+					console.log(`Contact data is: `,data);
+					if(data){
+						setStore({ contacts: data.contacts });
+						console.log("Contacts in store are: ",store.contacts);
+					}
+				}
+				catch (error) {
+					console.error('Error', error);
+				}
 			},
 
 			/* ~~~~~~CREATE CONTACT~~~~~~~ */

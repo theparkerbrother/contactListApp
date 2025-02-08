@@ -22,16 +22,18 @@ const Layout = () => {
 		<div>
 			<BrowserRouter basename={basename}>
 				<ScrollToTop>
-					{/*<Navbar />*/}
-					<Routes>
-						<Route path="/" element={<Contact />} />
-						<Route path="/demo" element={<Demo />} />
-						<Route path="/addContact" element={<AddContact />}/>
-						<Route path="/contact" element={<Contact />}/>
-						<Route path="/single/:theid" element={<Single />} />
-						<Route path="*" element={<h1>Not found!</h1>} />
-					</Routes>
-					{/* <Footer /> */}
+					<div className="container mt-3">
+						{/* <Navbar /> */}
+						<Routes>
+							<Route path="/" element={<Contact />} />
+							<Route path="/demo" element={<Demo />} />
+							<Route path="/addContact" element={<AddContact />}/>
+							<Route path="/contact" element={<Contact />}/>
+							<Route path="/single/:theid" element={<Single />} />
+							<Route path="*" element={<h1>Not found!</h1>} />
+						</Routes>
+						{/* <Footer /> */}
+					</div>
 				</ScrollToTop>
 			</BrowserRouter>
 		</div>
